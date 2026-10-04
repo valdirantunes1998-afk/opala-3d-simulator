@@ -2,116 +2,64 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-  <title>Opala 98 — Teste de Velocidade</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Opala 98 — Modelo Realista</title>
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body {
-      margin: 0; width: 100%; height: 100%; overflow: hidden;
+      width: 100%; height: 100%; overflow: hidden;
       background: #87ceeb; font-family: system-ui, -apple-system, sans-serif;
-      -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
     }
-
     #canvas { display: block; width: 100%; height: 100%; }
-
-    .hud {
-      position: fixed; top: 12px; left: 12px; z-index: 20;
-      background: rgba(0,0,0,0.6); border: 2px solid #ffd700; border-radius: 10px;
-      padding: 12px 16px; color: white; font-size: 13px; min-width: 140px;
-      font-weight: bold; font-family: monospace;
-    }
-
-    .hud-item { margin: 6px 0; display: flex; justify-content: space-between; gap: 10px; }
-    .label { color: #aaa; }
-    .value { color: #ffd700; font-size: 16px; }
-
-    .controls-mobile {
-      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-      z-index: 30; display: none; flex-direction: column; align-items: center; gap: 10px;
-    }
-
-    .dpad {
-      display: grid; grid-template-columns: 60px 60px 60px; grid-gap: 4px;
-      width: fit-content;
-    }
-
-    .dpad-btn {
-      width: 60px; height: 60px; background: rgba(100,150,200,0.7); border: 2px solid #fff;
-      border-radius: 8px; color: white; font-size: 24px; font-weight: bold;
-      display: flex; align-items: center; justify-content: center;
-      user-select: none; -webkit-user-select: none; touch-action: none;
-      cursor: pointer; transition: background 0.1s;
-    }
-
-    .dpad-btn:active { background: rgba(100,150,200,0.95); }
-    .dpad-empty { grid-column: 2; }
-
-    .action-buttons {
-      display: flex; gap: 10px; justify-content: center;
-    }
-
-    .action-btn {
-      width: 70px; height: 70px; border-radius: 50%; font-weight: bold;
-      border: 2px solid #fff; color: white; font-size: 12px; display: flex;
-      align-items: center; justify-content: center; touch-action: none;
-      transition: background 0.1s;
-    }
-
-    #motorBtn { background: rgba(200,100,100,0.7); }
-    #motorBtn:active { background: rgba(200,100,100,0.95); }
-
-    #freioBtn { background: rgba(100,100,200,0.7); }
-    #freioBtn:active { background: rgba(100,100,200,0.95); }
-
-    #turboBtn { background: rgba(200,200,100,0.7); }
-    #turboBtn:active { background: rgba(200,200,100,0.95); }
-
-    @media (max-width: 768px) {
-      .controls-mobile { display: flex; }
-      .hud { font-size: 11px; padding: 10px 12px; min-width: 120px; }
-      .hud-item { margin: 4px 0; }
-      .value { font-size: 14px; }
-    }
-
     .info {
-      position: fixed; bottom: 12px; left: 12px; z-index: 20;
-      background: rgba(0,0,0,0.6); border: 1px solid #888; border-radius: 8px;
-      padding: 8px 12px; color: #aaa; font-size: 11px; max-width: 200px;
+      position: fixed; top: 20px; left: 20px; z-index: 10;
+      background: rgba(0,0,0,0.7); color: #fff; padding: 15px 20px;
+      border-radius: 10px; border: 2px solid #ffd700; font-size: 14px;
+      font-family: monospace; min-width: 180px;
     }
+    .info-line { margin: 6px 0; display: flex; justify-content: space-between; gap: 15px; }
+    .label { color: #aaa; }
+    .value { color: #ffd700; font-weight: bold; }
+    .controls {
+      position: fixed; bottom: 20px; left: 20px; z-index: 10;
+      background: rgba(0,0,0,0.7); color: #ccc; padding: 12px 16px;
+      border-radius: 8px; font-size: 12px; border: 1px solid #666;
+      max-width: 250px;
+    }
+    .controls h3 { color: #ffd700; margin-bottom: 8px; }
+    .controls p { margin: 4px 0; line-height: 1.6; }
   </style>
 </head>
 <body>
   <canvas id="canvas"></canvas>
 
-  <div class="hud">
-    <div class="hud-item"><span class="label">Velocidade:</span><span class="value" id="speed">0 km/h</span></div>
-    <div class="hud-item"><span class="label">Marcha:</span><span class="value" id="gear">N</span></div>
-    <div class="hud-item"><span class="label">Motor:</span><span class="value" id="status">OFF</span></div>
-    <div class="hud-item"><span class="label">Distância:</span><span class="value" id="distance">0 m</span></div>
-  </div>
-
   <div class="info">
-    🎮 Toque nos botões para dirigir<br>
-    Pressione MOTOR, depois use setas para andar
+    <div class="info-line">
+      <span class="label">Velocidade:</span>
+      <span class="value" id="speed">0 km/h</span>
+    </div>
+    <div class="info-line">
+      <span class="label">Marcha:</span>
+      <span class="value" id="gear">N</span>
+    </div>
+    <div class="info-line">
+      <span class="label">Motor:</span>
+      <span class="value" id="motor">DESLIGADO</span>
+    </div>
+    <div class="info-line">
+      <span class="label">Distância:</span>
+      <span class="value" id="distance">0 m</span>
+    </div>
   </div>
 
-  <div class="controls-mobile">
-    <div class="dpad">
-      <div></div>
-      <button class="dpad-btn" id="upBtn">▲</button>
-      <div></div>
-      <button class="dpad-btn" id="leftBtn">◀</button>
-      <div class="dpad-empty"></div>
-      <button class="dpad-btn" id="rightBtn">▶</button>
-      <div></div>
-      <button class="dpad-btn" id="downBtn">▼</button>
-      <div></div>
-    </div>
-    <div class="action-buttons">
-      <button class="action-btn" id="motorBtn">MOTOR</button>
-      <button class="action-btn" id="freioBtn">FREIO</button>
-      <button class="action-btn" id="turboBtn">TURBO</button>
-    </div>
+  <div class="controls">
+    <h3>🎮 Controles</h3>
+    <p><strong>W/↑</strong> - Acelerar<br>
+    <strong>S/↓</strong> - Frear/Ré<br>
+    <strong>A/←</strong> - Virar esquerda<br>
+    <strong>D/→</strong> - Virar direita<br>
+    <strong>Shift</strong> - Turbo<br>
+    <strong>E</strong> - Ligar/Desligar motor</p>
   </div>
 
   <script type="importmap">
@@ -125,16 +73,17 @@
   <script type="module">
     import * as THREE from 'three';
 
+    // ===== CENA E CÂMERA =====
     const canvas = document.getElementById('canvas');
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
-    scene.fog = new THREE.Fog(0x87ceeb, 80, 200);
+    scene.fog = new THREE.Fog(0x87ceeb, 120, 300);
 
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 3, 8);
+    const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 4, 12);
     camera.lookAt(0, 0.5, 0);
 
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.shadowMap.enabled = true;
@@ -143,484 +92,571 @@
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.0;
 
-    // Iluminação
-    scene.add(new THREE.HemisphereLight(0xe6f3ff, 0x5a7a4a, 1.8));
-    const sun = new THREE.DirectionalLight(0xffedd5, 2.0);
-    sun.position.set(25, 20, 15);
+    // ===== ILUMINAÇÃO =====
+    scene.add(new THREE.HemisphereLight(0xe8f4ff, 0x6a8a4a, 1.9));
+    
+    const sun = new THREE.DirectionalLight(0xfff0d5, 2.2);
+    sun.position.set(30, 25, 20);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
-    sun.shadow.camera.left = -50;
-    sun.shadow.camera.right = 50;
-    sun.shadow.camera.top = 50;
-    sun.shadow.camera.bottom = -50;
-    sun.shadow.camera.far = 100;
+    sun.shadow.camera.left = -60;
+    sun.shadow.camera.right = 60;
+    sun.shadow.camera.top = 60;
+    sun.shadow.camera.bottom = -60;
+    sun.shadow.camera.far = 120;
     scene.add(sun);
 
-    // Céu
+    // ===== CÉUS =====
     const skyDome = new THREE.Mesh(
-      new THREE.SphereGeometry(150, 32, 32),
+      new THREE.SphereGeometry(200, 32, 32),
       new THREE.MeshBasicMaterial({ color: 0x87ceeb, side: THREE.BackSide })
     );
     scene.add(skyDome);
 
-    // Terreno
-    const groundGeo = new THREE.PlaneGeometry(200, 200);
-    const groundMat = new THREE.MeshStandardMaterial({ color: 0x6ba346, roughness: 1 });
+    // ===== TERRENO GRAMA =====
+    const groundGeo = new THREE.PlaneGeometry(300, 300);
+    const groundMat = new THREE.MeshStandardMaterial({
+      color: 0x6ba346,
+      roughness: 1,
+      metalness: 0
+    });
     const ground = new THREE.Mesh(groundGeo, groundMat);
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
-    ground.position.y = -0.02;
+    ground.position.y = -0.01;
     scene.add(ground);
 
-    // Textura de grama
+    // Textura procedural de grama
     const grassCanvas = document.createElement('canvas');
-    grassCanvas.width = 256;
-    grassCanvas.height = 256;
+    grassCanvas.width = 512;
+    grassCanvas.height = 512;
     const grassCtx = grassCanvas.getContext('2d');
     grassCtx.fillStyle = '#6ba346';
-    grassCtx.fillRect(0, 0, 256, 256);
-    for (let i = 0; i < 3000; i++) {
-      const x = Math.random() * 256;
-      const y = Math.random() * 256;
-      grassCtx.fillStyle = ['#5a9236', '#7bb855', '#4a8226'][Math.random() * 3 | 0];
-      grassCtx.globalAlpha = 0.3 + Math.random() * 0.3;
-      grassCtx.fillRect(x, y, 1 + Math.random() * 2, 1 + Math.random() * 2);
+    grassCtx.fillRect(0, 0, 512, 512);
+
+    // Grama com variação de cores
+    for (let i = 0; i < 8000; i++) {
+      const x = Math.random() * 512;
+      const y = Math.random() * 512;
+      const cores = ['#5d9d3a', '#7abf58', '#4a8225', '#6fb555'];
+      grassCtx.fillStyle = cores[Math.floor(Math.random() * cores.length)];
+      grassCtx.globalAlpha = 0.25 + Math.random() * 0.4;
+      grassCtx.fillRect(x, y, Math.random() * 3, Math.random() * 2);
     }
+
     grassCtx.globalAlpha = 1;
-    const grassTex = new THREE.CanvasTexture(grassCanvas);
-    grassTex.wrapS = grassTex.wrapT = THREE.RepeatWrapping;
-    grassTex.repeat.set(12, 12);
-    groundMat.map = grassTex;
+    const grassTexture = new THREE.CanvasTexture(grassCanvas);
+    grassTexture.wrapS = grassTexture.wrapT = THREE.RepeatWrapping;
+    grassTexture.repeat.set(20, 20);
+    grassTexture.magFilter = THREE.NearestFilter;
+    groundMat.map = grassTexture;
     groundMat.needsUpdate = true;
 
-    // Cercado de árvores ao redor
-    function criarArvore(x, z, escala = 1) {
-      const troco = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.3, 0.4, 4, 8),
-        new THREE.MeshStandardMaterial({ color: 0x5a3a1a, roughness: 1 })
-      );
-      troco.position.y = 2;
-      troco.castShadow = true;
+    // ===== OPALA 98 - MODELO REALISTA =====
+    class Opala98 {
+      constructor() {
+        this.group = new THREE.Group();
+        this.group.position.set(0, 0, 0);
+        this.buildCar();
+        scene.add(this.group);
+        this.wheels = [];
+        this.rotation = 0;
+      }
 
-      const copa = new THREE.Mesh(
-        new THREE.ConeGeometry(2.2 * escala, 5 * escala, 12),
-        new THREE.MeshStandardMaterial({ color: 0x2a5a2a, roughness: 0.95 })
-      );
-      copa.position.y = 5.5 * escala;
-      copa.castShadow = true;
+      buildCar() {
+        // Materiais realistas
+        const paintMat = new THREE.MeshPhysicalMaterial({
+          color: 0xa41d28,
+          metalness: 0.65,
+          roughness: 0.18,
+          clearcoat: 1,
+          clearcoatRoughness: 0.12,
+          side: THREE.FrontSide
+        });
 
-      const grupo = new THREE.Group();
-      grupo.add(troco, copa);
-      grupo.position.set(x, 0, z);
-      grupo.scale.set(escala, escala, escala);
-      scene.add(grupo);
-    }
+        const chromeMat = new THREE.MeshStandardMaterial({
+          color: 0xd5dce1,
+          metalness: 0.96,
+          roughness: 0.12,
+          side: THREE.FrontSide
+        });
 
-    // Cercado de árvores em volta do mapa
-    const rays = 32;
-    const radius = 92;
-    for (let i = 0; i < rays; i++) {
-      const angle = (i / rays) * Math.PI * 2;
-      const x = Math.cos(angle) * radius;
-      const z = Math.sin(angle) * radius;
-      criarArvore(x, z, 0.8 + Math.random() * 0.4);
-    }
+        const glassMatA = new THREE.MeshStandardMaterial({
+          color: 0x1a2a3a,
+          metalness: 0.25,
+          roughness: 0.08,
+          transparent: true,
+          opacity: 0.82,
+          side: THREE.FrontSide
+        });
 
-    // Opala 98 - Modelo detalhado
-    const carGroup = new THREE.Group();
-    carGroup.position.set(0, 0, 0);
-    scene.add(carGroup);
+        const rubberMat = new THREE.MeshStandardMaterial({
+          color: 0x0f0f0f,
+          roughness: 0.95,
+          metalness: 0
+        });
 
-    // Material do corpo
-    const pinturaMat = new THREE.MeshPhysicalMaterial({
-      color: 0xa31f2a,
-      metalness: 0.6,
-      roughness: 0.2,
-      clearcoat: 1,
-      clearcoatRoughness: 0.15
-    });
+        const blackMat = new THREE.MeshStandardMaterial({
+          color: 0x050505,
+          roughness: 0.8
+        });
 
-    const chromeMat = new THREE.MeshStandardMaterial({
-      color: 0xd8dfe5,
-      metalness: 0.95,
-      roughness: 0.15
-    });
+        const interiorMat = new THREE.MeshStandardMaterial({
+          color: 0x2a1f16,
+          roughness: 0.85
+        });
 
-    const vidroMat = new THREE.MeshStandardMaterial({
-      color: 0x1a2a3a,
-      metalness: 0.3,
-      roughness: 0.1,
-      transparent: true,
-      opacity: 0.8
-    });
+        const stripeMat = new THREE.MeshStandardMaterial({
+          color: 0xf4d480,
+          metalness: 0.3,
+          roughness: 0.4
+        });
 
-    const borracha = new THREE.MeshStandardMaterial({
-      color: 0x1a1a1a,
-      roughness: 0.9
-    });
+        // ===== CHASSIS E CARROCERIA =====
 
-    const preto = new THREE.MeshStandardMaterial({
-      color: 0x0a0a0a,
-      roughness: 0.8
-    });
+        // Chassis principal (corpo)
+        const chassis = new THREE.Mesh(
+          new THREE.BoxGeometry(2.0, 0.52, 4.6),
+          paintMat
+        );
+        chassis.position.y = 0.82;
+        chassis.castShadow = true;
+        chassis.receiveShadow = true;
+        this.group.add(chassis);
 
-    const interiorMat = new THREE.MeshStandardMaterial({
-      color: 0x3a2a1a,
-      roughness: 0.8
-    });
+        // Teto arredondado
+        const tetoGeo = new THREE.ConeGeometry(0.95, 0.3, 32, 8);
+        const teto = new THREE.Mesh(tetoGeo, paintMat);
+        teto.rotation.x = Math.PI / 2;
+        teto.position.y = 1.95;
+        teto.position.z = -0.2;
+        teto.scale.set(1.85, 1, 1.8);
+        teto.castShadow = true;
+        this.group.add(teto);
 
-    // Chassis e carroceria
-    const chassis = new THREE.Mesh(
-      new THREE.BoxGeometry(2.0, 0.5, 4.5),
-      pinturaMat
-    );
-    chassis.position.y = 0.8;
-    chassis.castShadow = true;
-    chassis.receiveShadow = true;
-    carGroup.add(chassis);
+        // Capô motor (com inclinação)
+        const caoGeo = new THREE.BoxGeometry(1.88, 0.1, 1.05);
+        const cao = new THREE.Mesh(caoGeo, paintMat);
+        cao.position.y = 1.17;
+        cao.position.z = -1.68;
+        cao.rotation.x = -0.12;
+        cao.castShadow = true;
+        this.group.add(cao);
 
-    // Teto
-    const teto = new THREE.Mesh(
-      new THREE.BoxGeometry(1.8, 0.15, 1.8),
-      pinturaMat
-    );
-    teto.position.y = 1.88;
-    teto.position.z = -0.1;
-    teto.castShadow = true;
-    carGroup.add(teto);
+        // Porta-malas
+        const portaMailasGeo = new THREE.BoxGeometry(1.88, 0.1, 0.95);
+        const portaMailas = new THREE.Mesh(portaMailasGeo, paintMat);
+        portaMailas.position.y = 1.15;
+        portaMailas.position.z = 1.72;
+        portaMailas.rotation.x = 0.08;
+        portaMailas.castShadow = true;
+        this.group.add(portaMailas);
 
-    // Capô
-    const cao = new THREE.Mesh(
-      new THREE.BoxGeometry(1.85, 0.08, 1.0),
-      pinturaMat
-    );
-    cao.position.y = 1.15;
-    cao.position.z = -1.7;
-    cao.castShadow = true;
-    carGroup.add(cao);
+        // ===== VIDROS =====
+        // Vidro dianteiro (pára-brisas)
+        const vidroDiantGeo = new THREE.PlaneGeometry(1.6, 0.42);
+        const vidroDiant = new THREE.Mesh(vidroDiantGeo, glassMatA);
+        vidroDiant.position.y = 1.65;
+        vidroDiant.position.z = -0.75;
+        vidroDiant.rotation.x = 0.35;
+        vidroDiant.castShadow = false;
+        this.group.add(vidroDiant);
 
-    // Porta-malas
-    const portaMalas = new THREE.Mesh(
-      new THREE.BoxGeometry(1.85, 0.08, 0.9),
-      pinturaMat
-    );
-    portaMalas.position.y = 1.15;
-    portaMalas.position.z = 1.75;
-    portaMalas.castShadow = true;
-    carGroup.add(portaMalas);
+        // Vidro traseiro
+        const vidroTrasGeo = new THREE.PlaneGeometry(1.6, 0.38);
+        const vidroTras = new THREE.Mesh(vidroTrasGeo, glassMatA);
+        vidroTras.position.y = 1.62;
+        vidroTras.position.z = 0.85;
+        vidroTras.rotation.x = -0.25;
+        vidroTras.castShadow = false;
+        this.group.add(vidroTras);
 
-    // Lateral (com vidros)
-    for (const lado of [-1, 1]) {
-      // Vidro dianteiro
-      const vidroDiant = new THREE.Mesh(
-        new THREE.BoxGeometry(0.04, 0.35, 0.6),
-        vidroMat
-      );
-      vidroDiant.position.set(lado * 0.92, 1.5, -0.7);
-      vidroDiant.castShadow = false;
-      carGroup.add(vidroDiant);
+        // Vidros laterais dianteiros
+        for (const lado of [-1, 1]) {
+          const vidroLatGeo = new THREE.PlaneGeometry(0.04, 0.38, 2);
+          const vidroLat = new THREE.Mesh(vidroLatGeo, glassMatA);
+          vidroLat.position.set(lado * 0.95, 1.55, -0.35);
+          vidroLat.rotation.y = lado * 0.3;
+          vidroLat.castShadow = false;
+          this.group.add(vidroLat);
 
-      // Vidro traseiro
-      const vidroTras = new THREE.Mesh(
-        new THREE.BoxGeometry(0.04, 0.35, 0.6),
-        vidroMat
-      );
-      vidroTras.position.set(lado * 0.92, 1.5, 0.7);
-      vidroTras.castShadow = false;
-      carGroup.add(vidroTras);
+          // Vidros laterais traseiros
+          const vidroLatTrasGeo = new THREE.PlaneGeometry(0.04, 0.35, 1.5);
+          const vidroLatTras = new THREE.Mesh(vidroLatTrasGeo, glassMatA);
+          vidroLatTras.position.set(lado * 0.95, 1.52, 0.5);
+          vidroLatTras.rotation.y = lado * -0.25;
+          vidroLatTras.castShadow = false;
+          this.group.add(vidroLatTras);
+        }
 
-      // Cromados laterais
-      const cromado = new THREE.Mesh(
-        new THREE.BoxGeometry(0.08, 0.03, 4.2),
-        chromeMat
-      );
-      cromado.position.set(lado * 0.98, 0.54, 0);
-      carGroup.add(cromado);
-    }
+        // ===== FARÓIS E LANTERNAS =====
 
-    // Para-choque dianteiro
-    const paraChoqueDiant = new THREE.Mesh(
-      new THREE.BoxGeometry(2.05, 0.15, 0.15),
-      chromeMat
-    );
-    paraChoqueDiant.position.y = 0.65;
-    paraChoqueDiant.position.z = -2.3;
-    paraChoqueDiant.castShadow = true;
-    carGroup.add(paraChoqueDiant);
+        // Faróis dianteiros (alto brilho)
+        for (const lado of [-1, 1]) {
+          const farolGeo = new THREE.CylinderGeometry(0.17, 0.17, 0.12, 24);
+          const farol = new THREE.Mesh(farolGeo, new THREE.MeshStandardMaterial({
+            color: 0xfff5e1,
+            emissive: 0xffffcc,
+            emissiveIntensity: 0.5,
+            roughness: 0.15,
+            metalness: 0.4
+          }));
+          farol.rotation.z = Math.PI / 2;
+          farol.position.set(lado * 0.68, 1.02, -2.28);
+          farol.castShadow = false;
+          this.group.add(farol);
 
-    // Para-choque traseiro
-    const paraChoqueTras = new THREE.Mesh(
-      new THREE.BoxGeometry(2.05, 0.15, 0.15),
-      chromeMat
-    );
-    paraChoqueTras.position.y = 0.65;
-    paraChoqueTras.position.z = 2.3;
-    paraChoqueTras.castShadow = true;
-    carGroup.add(paraChoqueTras);
+          // Aro cromado do farol
+          const aroFarol = new THREE.Mesh(
+            new THREE.TorusGeometry(0.19, 0.02, 8, 24),
+            chromeMat
+          );
+          aroFarol.rotation.x = Math.PI / 2;
+          aroFarol.position.set(lado * 0.68, 1.02, -2.3);
+          this.group.add(aroFarol);
+        }
 
-    // Farol dianteiro esquerdo
-    const farolEsq = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.15, 0.15, 0.1, 20),
-      new THREE.MeshStandardMaterial({ color: 0xfff8dc, emissive: 0xffff99, emissiveIntensity: 0.4 })
-    );
-    farolEsq.rotation.z = Math.PI / 2;
-    farolEsq.position.set(-0.65, 1.0, -2.25);
-    carGroup.add(farolEsq);
+        // Lanternas traseiras (vermelhas)
+        for (const lado of [-1, 1]) {
+          const lanternaGeo = new THREE.BoxGeometry(0.22, 0.16, 0.08);
+          const lanterna = new THREE.Mesh(lanternaGeo, new THREE.MeshStandardMaterial({
+            color: 0xd50000,
+            emissive: 0x660000,
+            emissiveIntensity: 0.4,
+            roughness: 0.2,
+            metalness: 0.3
+          }));
+          lanterna.position.set(lado * 0.72, 0.95, 2.35);
+          lanterna.castShadow = true;
+          this.group.add(lanterna);
+        }
 
-    // Farol dianteiro direito
-    const farolDir = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.15, 0.15, 0.1, 20),
-      new THREE.MeshStandardMaterial({ color: 0xfff8dc, emissive: 0xffff99, emissiveIntensity: 0.4 })
-    );
-    farolDir.rotation.z = Math.PI / 2;
-    farolDir.position.set(0.65, 1.0, -2.25);
-    carGroup.add(farolDir);
+        // ===== CROMADOS E DETALHES =====
 
-    // Lanternas traseiras
-    const lanterna1 = new THREE.Mesh(
-      new THREE.BoxGeometry(0.2, 0.15, 0.08),
-      new THREE.MeshStandardMaterial({ color: 0xcc0000, emissive: 0x660000, emissiveIntensity: 0.3 })
-    );
-    lanterna1.position.set(-0.7, 0.9, 2.3);
-    carGroup.add(lanterna1);
-
-    const lanterna2 = new THREE.Mesh(
-      new THREE.BoxGeometry(0.2, 0.15, 0.08),
-      new THREE.MeshStandardMaterial({ color: 0xcc0000, emissive: 0x660000, emissiveIntensity: 0.3 })
-    );
-    lanterna2.position.set(0.7, 0.9, 2.3);
-    carGroup.add(lanterna2);
-
-    // Interior visível (banco)
-    const banco = new THREE.Mesh(
-      new THREE.BoxGeometry(1.3, 0.15, 0.6),
-      interiorMat
-    );
-    banco.position.y = 1.2;
-    banco.position.z = -0.1;
-    carGroup.add(banco);
-
-    // Volante (simples)
-    const volante = new THREE.Mesh(
-      new THREE.TorusGeometry(0.15, 0.02, 8, 20),
-      preto
-    );
-    volante.rotation.y = Math.PI / 2;
-    volante.position.set(0, 1.55, -0.35);
-    carGroup.add(volante);
-
-    // Rodas - Array para referência
-    const rodas = [];
-
-    function criarRoda(x, z) {
-      const grupoRoda = new THREE.Group();
-      grupoRoda.position.set(x, 0.45, z);
-
-      // Pneu
-      const pneu = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.48, 0.48, 0.24, 20),
-        borracha
-      );
-      pneu.rotation.z = Math.PI / 2;
-      pneu.castShadow = true;
-      grupoRoda.add(pneu);
-
-      // Roda cromada
-      const roda = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.32, 0.32, 0.25, 16),
-        chromeMat
-      );
-      roda.rotation.z = Math.PI / 2;
-      grupoRoda.add(roda);
-
-      // Centro
-      const centro = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.1, 0.1, 0.27, 16),
-        chromeMat
-      );
-      centro.rotation.z = Math.PI / 2;
-      grupoRoda.add(centro);
-
-      // Parafusos
-      for (let i = 0; i < 5; i++) {
-        const parafuso = new THREE.Mesh(
-          new THREE.SphereGeometry(0.02, 8, 8),
+        // Para-choque dianteiro (cromado)
+        const paraChoqueDiant = new THREE.Mesh(
+          new THREE.BoxGeometry(2.1, 0.12, 0.18),
           chromeMat
         );
-        const ang = (i / 5) * Math.PI * 2;
-        parafuso.position.set(0.08 * Math.cos(ang), 0.17 * Math.sin(ang), 0.05);
-        grupoRoda.add(parafuso);
+        paraChoqueDiant.position.y = 0.62;
+        paraChoqueDiant.position.z = -2.32;
+        paraChoqueDiant.castShadow = true;
+        this.group.add(paraChoqueDiant);
+
+        // Para-choque traseiro (cromado)
+        const paraChoqueTras = new THREE.Mesh(
+          new THREE.BoxGeometry(2.1, 0.12, 0.18),
+          chromeMat
+        );
+        paraChoqueTras.position.y = 0.62;
+        paraChoqueTras.position.z = 2.36;
+        paraChoqueTras.castShadow = true;
+        this.group.add(paraChoqueTras);
+
+        // Moldura cromada lateral
+        for (const lado of [-1, 1]) {
+          const moldura = new THREE.Mesh(
+            new THREE.BoxGeometry(0.1, 0.04, 4.4),
+            chromeMat
+          );
+          moldura.position.set(lado * 0.98, 0.54, 0);
+          this.group.add(moldura);
+
+          // Maçanetas
+          const macaneta = new THREE.Mesh(
+            new THREE.BoxGeometry(0.06, 0.05, 0.18),
+            chromeMat
+          );
+          macaneta.position.set(lado * 0.92, 1.15, -0.3);
+          this.group.add(macaneta);
+
+          // Espelhos (pequeno cilindro)
+          const espelho = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.13, 0.13, 0.08, 16),
+            chromeMat
+          );
+          espelho.rotation.z = Math.PI / 2;
+          espelho.position.set(lado * 0.92, 1.38, -0.65);
+          this.group.add(espelho);
+        }
+
+        // ===== FAIXAS ESPORTIVAS =====
+        for (const x of [-0.16, 0, 0.16]) {
+          const faixa = new THREE.Mesh(
+            new THREE.BoxGeometry(0.09, 0.02, 4.3),
+            stripeMat
+          );
+          faixa.position.set(x, 1.25, 0);
+          this.group.add(faixa);
+        }
+
+        // ===== INTERIOR VISÍVEL =====
+
+        // Bancos
+        for (const lado of [-0.4, 0.4]) {
+          const banco = new THREE.Mesh(
+            new THREE.BoxGeometry(0.32, 0.18, 0.65),
+            interiorMat
+          );
+          banco.position.set(lado, 1.18, -0.15);
+          this.group.add(banco);
+        }
+
+        // Painel
+        const painel = new THREE.Mesh(
+          new THREE.BoxGeometry(1.4, 0.12, 0.22),
+          blackMat
+        );
+        painel.position.y = 1.42;
+        painel.position.z = -0.48;
+        this.group.add(painel);
+
+        // Volante
+        const volanteGeo = new THREE.TorusGeometry(0.16, 0.03, 10, 40);
+        const volante = new THREE.Mesh(volanteGeo, blackMat);
+        volante.rotation.y = Math.PI / 2;
+        volante.position.set(0, 1.58, -0.3);
+        this.group.add(volante);
+
+        // Tubo de escape
+        for (const lado of [-1, 1]) {
+          const escape = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.08, 0.08, 0.25, 12),
+            new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.7, metalness: 0.2 })
+          );
+          escape.rotation.x = Math.PI / 2;
+          escape.position.set(lado * 0.52, 0.52, 2.3);
+          escape.castShadow = true;
+          this.group.add(escape);
+        }
+
+        // ===== RODAS =====
+        this.createWheels();
+
+        // ===== ILUMINAÇÃO DO CARRO =====
+        const carLight = new THREE.SpotLight(0xfff4d0, 45, 30, Math.PI / 10, 0.55, 1.3);
+        carLight.position.set(0, 1.0, -2.25);
+        carLight.target.position.set(0, 0.3, -18);
+        carLight.castShadow = true;
+        this.group.add(carLight);
+        this.group.add(carLight.target);
       }
 
-      carGroup.add(grupoRoda);
-      rodas.push(grupoRoda);
+      createWheels() {
+        const positions = [
+          [-0.95, -1.4],
+          [0.95, -1.4],
+          [-0.95, 1.4],
+          [0.95, 1.4]
+        ];
+
+        for (const [x, z] of positions) {
+          this.createWheel(x, z);
+        }
+      }
+
+      createWheel(x, z) {
+        const wheelGroup = new THREE.Group();
+        wheelGroup.position.set(x, 0.48, z);
+
+        // Pneu
+        const tireGeo = new THREE.CylinderGeometry(0.48, 0.48, 0.25, 18);
+        const tire = new THREE.Mesh(tireGeo, new THREE.MeshStandardMaterial({
+          color: 0x0a0a0a,
+          roughness: 0.95,
+          metalness: 0
+        }));
+        tire.rotation.z = Math.PI / 2;
+        tire.castShadow = true;
+        tire.receiveShadow = true;
+        wheelGroup.add(tire);
+
+        // Friso do pneu
+        const frisoGeo = new THREE.BoxGeometry(0.24, 0.018, 0.046);
+        const frisoCounts = 24;
+        for (let i = 0; i < frisoCounts; i++) {
+          const friso = new THREE.Mesh(frisoGeo, new THREE.MeshStandardMaterial({ color: 0x1a1a1a }));
+          const ang = (i / frisoCounts) * Math.PI * 2;
+          friso.position.set(0, 0.47 * Math.cos(ang), 0.47 * Math.sin(ang));
+          friso.rotation.x = ang;
+          wheelGroup.add(friso);
+        }
+
+        // Roda (aro cromado)
+        const rimGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.26, 20);
+        const rim = new THREE.Mesh(rimGeo, new THREE.MeshStandardMaterial({
+          color: 0xd2d8dc,
+          metalness: 0.95,
+          roughness: 0.15
+        }));
+        rim.rotation.z = Math.PI / 2;
+        rim.receiveShadow = true;
+        wheelGroup.add(rim);
+
+        // Centro da roda
+        const hubGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.28, 16);
+        const hub = new THREE.Mesh(hubGeo, new THREE.MeshStandardMaterial({
+          color: 0xc5cad0,
+          metalness: 0.92,
+          roughness: 0.2
+        }));
+        hub.rotation.z = Math.PI / 2;
+        wheelGroup.add(hub);
+
+        // Parafusos cromados
+        for (let i = 0; i < 5; i++) {
+          const boltGeo = new THREE.SphereGeometry(0.025, 12, 12);
+          const bolt = new THREE.Mesh(boltGeo, new THREE.MeshStandardMaterial({
+            color: 0xdbdfe4,
+            metalness: 0.94,
+            roughness: 0.12
+          }));
+          const ang = (i / 5) * Math.PI * 2;
+          bolt.position.set(0.085 * Math.cos(ang), 0.17 * Math.sin(ang), 0.06);
+          wheelGroup.add(bolt);
+        }
+
+        this.group.add(wheelGroup);
+        this.wheels.push(wheelGroup);
+      }
+
+      update(velocidade, direcao, dt) {
+        // Rotação das rodas
+        if (Math.abs(velocidade) > 0.05) {
+          this.wheels.forEach(wheel => {
+            wheel.rotation.x -= (velocidade * dt * 0.95);
+            wheel.rotation.y = direcao * 0.35;
+          });
+        }
+
+        // Rotação frontal do carro
+        if (Math.abs(velocidade) > 0.5) {
+          this.rotation += direcao * velocidade * 0.025 * dt;
+        }
+
+        this.group.rotation.y = this.rotation;
+
+        // Movimento
+        const dx = Math.sin(this.rotation) * velocidade * dt * 1.2;
+        const dz = Math.cos(this.rotation) * velocidade * dt * 1.2;
+        this.group.position.x += dx;
+        this.group.position.z += dz;
+
+        // Limite do mapa
+        const limit = 120;
+        this.group.position.x = Math.max(-limit, Math.min(limit, this.group.position.x));
+        this.group.position.z = Math.max(-limit, Math.min(limit, this.group.position.z));
+
+        return { x: this.group.position.x, z: this.group.position.z };
+      }
+
+      getPosition() {
+        return { x: this.group.position.x, z: this.group.position.z };
+      }
     }
 
-    // 4 rodas
-    criarRoda(-0.95, -1.4);
-    criarRoda(0.95, -1.4);
-    criarRoda(-0.95, 1.4);
-    criarRoda(0.95, 1.4);
+    // ===== ESTADO DO JOGO =====
+    const opala = new Opala98();
 
-    // Luz frontal
-    const luz = new THREE.SpotLight(0xfff0b3, 40, 25, Math.PI / 12, 0.5, 1.2);
-    luz.position.set(0, 1.0, -2.2);
-    luz.target.position.set(0, 0.5, -15);
-    carGroup.add(luz);
-    carGroup.add(luz.target);
-
-    // Controles de teclado
-    const keys = {};
-    window.addEventListener('keydown', (e) => {
-      keys[e.key.toLowerCase()] = true;
-      if (e.key.toLowerCase() === 'e') {
-        state.motorLigado = !state.motorLigado;
-        updateStatus();
-      }
-    });
-    window.addEventListener('keyup', (e) => keys[e.key.toLowerCase()] = false);
-
-    // Controles móveis
     const state = {
       velocidade: 0,
       direcao: 0,
       motorLigado: false,
       distancia: 0,
-      rotacao: 0
+      rpm: 0
     };
 
-    function setupMobileControls() {
-      const upBtn = document.getElementById('upBtn');
-      const downBtn = document.getElementById('downBtn');
-      const leftBtn = document.getElementById('leftBtn');
-      const rightBtn = document.getElementById('rightBtn');
-      const motorBtn = document.getElementById('motorBtn');
-      const freioBtn = document.getElementById('freioBtn');
-      const turboBtn = document.getElementById('turboBtn');
+    const keys = {};
+    const driveKeys = ['w', 'arrowup', 's', 'arrowdown', 'a', 'arrowleft', 'd', 'arrowright', 'shift', 'e'];
 
-      function addTouchControl(btn, action) {
-        btn.addEventListener('pointerdown', (e) => { e.preventDefault(); keys[action] = true; });
-        btn.addEventListener('pointerup', (e) => { e.preventDefault(); keys[action] = false; });
-        btn.addEventListener('pointercancel', () => { keys[action] = false; });
+    window.addEventListener('keydown', (e) => {
+      const key = e.key.toLowerCase();
+      if (driveKeys.includes(key)) e.preventDefault();
+
+      if (key === 'e') {
+        state.motorLigado = !state.motorLigado;
+        updateUI();
       }
 
-      addTouchControl(upBtn, 'w');
-      addTouchControl(downBtn, 's');
-      addTouchControl(leftBtn, 'a');
-      addTouchControl(rightBtn, 'd');
+      keys[key] = true;
+    });
 
-      motorBtn.addEventListener('pointerdown', (e) => {
-        e.preventDefault();
-        state.motorLigado = !state.motorLigado;
-        updateStatus();
-      });
+    window.addEventListener('keyup', (e) => {
+      keys[e.key.toLowerCase()] = false;
+    });
 
-      freioBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); keys['freio'] = true; });
-      freioBtn.addEventListener('pointerup', (e) => { e.preventDefault(); keys['freio'] = false; });
-      freioBtn.addEventListener('pointercancel', () => { keys['freio'] = false; });
+    function updateUI() {
+      const kmh = Math.round(Math.abs(state.velocidade) * 3.6);
+      document.getElementById('speed').textContent = kmh + ' km/h';
 
-      turboBtn.addEventListener('pointerdown', (e) => { e.preventDefault(); keys['turbo'] = true; });
-      turboBtn.addEventListener('pointerup', (e) => { e.preventDefault(); keys['turbo'] = false; });
-      turboBtn.addEventListener('pointercancel', () => { keys['turbo'] = false; });
+      let gear = 'N';
+      if (state.velocidade > 0.5) {
+        gear = kmh < 12 ? '1' : kmh < 24 ? '2' : kmh < 38 ? '3' : kmh < 54 ? '4' : '5';
+      } else if (state.velocidade < -0.5) {
+        gear = 'R';
+      }
+      document.getElementById('gear').textContent = gear;
+
+      const motorText = state.motorLigado ? 'LIGADO' : 'DESLIGADO';
+      const motorColor = state.motorLigado ? '#00ff00' : '#ff6666';
+      const motorEl = document.getElementById('motor');
+      motorEl.textContent = motorText;
+      motorEl.style.color = motorColor;
+
+      document.getElementById('distance').textContent = Math.floor(state.distancia) + ' m';
     }
 
-    setupMobileControls();
-
-    function updateStatus() {
-      document.getElementById('status').textContent = state.motorLigado ? 'ON' : 'OFF';
-      document.getElementById('status').style.color = state.motorLigado ? '#00ff00' : '#ff6666';
-    }
-
-    let tempoAnterior = performance.now();
+    // ===== LOOP PRINCIPAL =====
+    let lastTime = performance.now();
 
     function animate(now) {
       requestAnimationFrame(animate);
 
-      const dt = Math.min((now - tempoAnterior) / 1000, 0.05);
-      tempoAnterior = now;
+      const dt = Math.min((now - lastTime) / 1000, 0.05);
+      lastTime = now;
 
-      // Física do carro
-      const aceleracao = (keys['w'] || keys['arrowup']) ? 1 : 0;
-      const freio = (keys['s'] || keys['arrowdown'] || keys['freio']) ? 1 : 0;
-      const turbo = keys['turbo'] ? 2 : 1;
-      const esquerda = (keys['a'] || keys['arrowleft']) ? -1 : 0;
-      const direita = (keys['d'] || keys['arrowright']) ? 1 : 0;
+      // Controles
+      const accel = (keys['w'] || keys['arrowup']) ? 1 : 0;
+      const brake = (keys['s'] || keys['arrowdown']) ? 1 : 0;
+      const left = (keys['a'] || keys['arrowleft']) ? -1 : 0;
+      const right = (keys['d'] || keys['arrowright']) ? 1 : 0;
+      const turbo = keys['shift'] ? 1.5 : 1;
 
+      // Física
       if (state.motorLigado) {
-        state.velocidade += aceleracao * 35 * turbo * dt;
-        state.velocidade -= freio * 45 * dt;
+        state.velocidade += accel * 32 * turbo * dt;
+        state.velocidade -= brake * 42 * dt;
       } else {
-        state.velocidade -= 15 * dt;
+        state.velocidade -= 20 * dt;
       }
 
-      state.velocidade = Math.max(-15, Math.min(65, state.velocidade));
+      state.velocidade = Math.max(-14, Math.min(68, state.velocidade));
 
-      if (Math.abs(state.velocidade) < 0.1) state.velocidade = 0;
+      if (Math.abs(state.velocidade) < 0.08) state.velocidade = 0;
 
-      // Direção
-      const direcaoForce = (esquerda + direita) * 2.0;
-      state.direcao = Math.max(-1, Math.min(1, state.direcao + direcaoForce * dt));
-      state.direcao *= 0.94;
+      // Direção com suavidade
+      const steerForce = (left + right) * 1.8;
+      state.direcao = Math.max(-1.2, Math.min(1.2, state.direcao + steerForce * dt));
+      state.direcao *= 0.92;
 
-      // Rotação do carro
-      if (Math.abs(state.velocidade) > 0.5) {
-        state.rotacao += state.direcao * state.velocidade * 0.025 * dt;
-      }
-
-      carGroup.rotation.y = state.rotacao;
-
-      // Movimento
-      const dx = Math.sin(state.rotacao) * state.velocidade * dt * 1.2;
-      const dz = Math.cos(state.rotacao) * state.velocidade * dt * 1.2;
-      carGroup.position.x += dx;
-      carGroup.position.z += dz;
-
-      // Limite do mapa
-      const limiteXZ = 85;
-      carGroup.position.x = Math.max(-limiteXZ, Math.min(limiteXZ, carGroup.position.x));
-      carGroup.position.z = Math.max(-limiteXZ, Math.min(limiteXZ, carGroup.position.z));
-
-      // Girar rodas
-      if (Math.abs(state.velocidade) > 0.05) {
-        rodas.forEach((roda) => {
-          roda.rotation.x -= (state.velocidade * dt * 0.95);
-        });
-      }
-
-      // Distância
-      state.distancia += Math.abs(state.velocidade) * 6 * dt;
+      // Atualizar carro
+      const carPos = opala.update(state.velocidade, state.direcao, dt);
+      state.distancia += Math.abs(state.velocidade) * 6.5 * dt;
 
       // Câmera segue o carro
-      const camDistance = 8;
-      const camHeight = 3;
-      const anguloCam = state.rotacao + Math.PI;
-      const cameraTargetX = carGroup.position.x + Math.sin(anguloCam) * camDistance;
-      const cameraTargetZ = carGroup.position.z + Math.cos(anguloCam) * camDistance;
+      const camDistance = 8.5;
+      const camHeight = 3.5;
+      const angleCamera = opala.rotation + Math.PI;
+      const targetCamX = carPos.x + Math.sin(angleCamera) * camDistance;
+      const targetCamZ = carPos.z + Math.cos(angleCamera) * camDistance;
 
-      camera.position.x += (cameraTargetX - camera.position.x) * 0.1;
-      camera.position.z += (cameraTargetZ - camera.position.z) * 0.1;
-      camera.position.y = carGroup.position.y + camHeight;
+      camera.position.x += (targetCamX - camera.position.x) * 0.12;
+      camera.position.z += (targetCamZ - camera.position.z) * 0.12;
+      camera.position.y = carPos.z < 0 ? camHeight + 0.5 : camHeight;
 
-      camera.lookAt(
-        carGroup.position.x,
-        carGroup.position.y + 1.0,
-        carGroup.position.z
-      );
+      camera.lookAt(carPos.x, carPos.z + 1.0, carPos.z);
 
-      // Atualizar HUD
-      const kmh = Math.round(Math.abs(state.velocidade) * 3.6);
-      document.getElementById('speed').textContent = kmh + ' km/h';
-
-      let marcha = 'N';
-      if (state.velocidade > 0.5) {
-        marcha = kmh < 15 ? '1' : kmh < 30 ? '2' : kmh < 45 ? '3' : kmh < 60 ? '4' : '5';
-      } else if (state.velocidade < -0.5) {
-        marcha = 'R';
-      }
-      document.getElementById('gear').textContent = marcha;
-
-      document.getElementById('distance').textContent = Math.floor(state.distancia) + ' m';
-
+      updateUI();
       renderer.render(scene, camera);
     }
 
@@ -633,7 +669,7 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    updateStatus();
+    updateUI();
   </script>
 </body>
 </html>
